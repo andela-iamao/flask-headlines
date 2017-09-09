@@ -1,5 +1,5 @@
 import feedparser
-from flask import Flask
+from flask import Flask, render_template
 
 app = Flask(__name__)
 
@@ -10,25 +10,13 @@ BBC_FEEDS = {
     "iol": "http://www.iol.co.za/cmlink/1.640"
 }
 
+
 @app.route('/')
 @app.route('/<source>')
 def get_news(source="bbc"):
     feed = feedparser.parse(BBC_FEEDS[source])
-    first_article = feed['entries'][0]
-    return """
-        <html>
-            <body>
-                <h1>Headlines</h1>
-                <b>{0}</b><br />
-                <b>{1}</b><br />
-                <p>{2}</p><br />
-            </body>
-        </html>
-    """.format(
-        first_article.get("title"),
-        first_article.get("published"),
-        first_article.get("summary")
-    )
+    articles = feed['entries']
+    return render_template("home.html", articles=articles)
 
 
 if __name__ == '__main__':
